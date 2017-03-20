@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.util.messages;
@@ -27,11 +27,9 @@ import java.nio.charset.CharsetDecoder;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
+import org.pentaho.util.locale.LocaleResolver;
 
 public class LocaleHelper {
-
-  private static final ThreadLocal<Locale> threadLocales = new ThreadLocal<Locale>();
-  private static final ThreadLocal<Locale> threadLocaleOverride = new ThreadLocal<Locale>();
 
   public static final int FORMAT_SHORT = DateFormat.SHORT;
 
@@ -42,8 +40,6 @@ public class LocaleHelper {
   public static final int FORMAT_FULL = DateFormat.FULL;
 
   public static final int FORMAT_IGNORE = -1;
-
-  private static Locale defaultLocale;
 
   public static final String UTF_8 = "UTF-8"; //$NON-NLS-1$
 
@@ -57,11 +53,11 @@ public class LocaleHelper {
 
   public static void setDefaultLocale( final Locale newLocale ) {
 
-    LocaleHelper.defaultLocale = newLocale;
+    LocaleResolver.setDefaultLocale( newLocale );
   }
 
   public static Locale getDefaultLocale() {
-    return LocaleHelper.defaultLocale;
+    return LocaleResolver.getDefaultLocale();
   }
 
   /**
@@ -74,37 +70,11 @@ public class LocaleHelper {
     if ( localeOverride.contains( "_" ) ) {
       String[] parts = localeOverride.split( "_" );
       if ( parts.length >= 2 ) {
-        setLocaleOverride( new Locale( parts[0], parts[1] ) );
+        LocaleResolver.setLocaleOverride( new Locale( parts[0], parts[1] ) );
       }
     } else {
-      setLocaleOverride( new Locale( localeOverride ) );
+      LocaleResolver.setLocaleOverride( new Locale( localeOverride ) );
     }
-  }
-
-  public static void setLocaleOverride( final Locale localeOverride ) {
-    LocaleHelper.threadLocaleOverride.set( localeOverride );
-  }
-
-  public static Locale getLocaleOverride() {
-    return LocaleHelper.threadLocaleOverride.get();
-  }
-
-  public static void setLocale( final Locale newLocale ) {
-    LocaleHelper.threadLocales.set( newLocale );
-  }
-
-  public static Locale getLocale() {
-    Locale override = LocaleHelper.threadLocaleOverride.get();
-    if ( override != null ) {
-      return override;
-    }
-    Locale rtn = LocaleHelper.threadLocales.get();
-    if ( rtn != null ) {
-      return rtn;
-    }
-    LocaleHelper.defaultLocale = Locale.getDefault();
-    LocaleHelper.setLocale( LocaleHelper.defaultLocale );
-    return LocaleHelper.defaultLocale;
   }
 
   public static void setSystemEncoding( final String encoding ) {
@@ -235,11 +205,11 @@ public class LocaleHelper {
   public static DateFormat getDateFormat( final int dateFormat, final int timeFormat ) {
 
     if ( ( dateFormat != LocaleHelper.FORMAT_IGNORE ) && ( timeFormat != LocaleHelper.FORMAT_IGNORE ) ) {
-      return DateFormat.getDateTimeInstance( dateFormat, timeFormat, LocaleHelper.getLocale() );
+      return DateFormat.getDateTimeInstance( dateFormat, timeFormat, LocaleResolver.getLocale() );
     } else if ( dateFormat != LocaleHelper.FORMAT_IGNORE ) {
-      return DateFormat.getDateInstance( dateFormat, LocaleHelper.getLocale() );
+      return DateFormat.getDateInstance( dateFormat, LocaleResolver.getLocale() );
     } else if ( timeFormat != LocaleHelper.FORMAT_IGNORE ) {
-      return DateFormat.getTimeInstance( timeFormat, LocaleHelper.getLocale() );
+      return DateFormat.getTimeInstance( timeFormat, LocaleResolver.getLocale() );
     } else {
       return null;
     }
@@ -248,11 +218,11 @@ public class LocaleHelper {
 
   public static DateFormat getShortDateFormat( final boolean date, final boolean time ) {
     if ( date && time ) {
-      return DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, LocaleHelper.getLocale() );
+      return DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, LocaleResolver.getLocale() );
     } else if ( date ) {
-      return DateFormat.getDateInstance( DateFormat.SHORT, LocaleHelper.getLocale() );
+      return DateFormat.getDateInstance( DateFormat.SHORT, LocaleResolver.getLocale() );
     } else if ( time ) {
-      return DateFormat.getTimeInstance( DateFormat.SHORT, LocaleHelper.getLocale() );
+      return DateFormat.getTimeInstance( DateFormat.SHORT, LocaleResolver.getLocale() );
     } else {
       return null;
     }
@@ -260,11 +230,11 @@ public class LocaleHelper {
 
   public static DateFormat getMediumDateFormat( final boolean date, final boolean time ) {
     if ( date && time ) {
-      return DateFormat.getDateTimeInstance( DateFormat.MEDIUM, DateFormat.MEDIUM, LocaleHelper.getLocale() );
+      return DateFormat.getDateTimeInstance( DateFormat.MEDIUM, DateFormat.MEDIUM, LocaleResolver.getLocale() );
     } else if ( date ) {
-      return DateFormat.getDateInstance( DateFormat.MEDIUM, LocaleHelper.getLocale() );
+      return DateFormat.getDateInstance( DateFormat.MEDIUM, LocaleResolver.getLocale() );
     } else if ( time ) {
-      return DateFormat.getTimeInstance( DateFormat.MEDIUM, LocaleHelper.getLocale() );
+      return DateFormat.getTimeInstance( DateFormat.MEDIUM, LocaleResolver.getLocale() );
     } else {
       return null;
     }
@@ -272,11 +242,11 @@ public class LocaleHelper {
 
   public static DateFormat getLongDateFormat( final boolean date, final boolean time ) {
     if ( date && time ) {
-      return DateFormat.getDateTimeInstance( DateFormat.LONG, DateFormat.LONG, LocaleHelper.getLocale() );
+      return DateFormat.getDateTimeInstance( DateFormat.LONG, DateFormat.LONG, LocaleResolver.getLocale() );
     } else if ( date ) {
-      return DateFormat.getDateInstance( DateFormat.LONG, LocaleHelper.getLocale() );
+      return DateFormat.getDateInstance( DateFormat.LONG, LocaleResolver.getLocale() );
     } else if ( time ) {
-      return DateFormat.getTimeInstance( DateFormat.LONG, LocaleHelper.getLocale() );
+      return DateFormat.getTimeInstance( DateFormat.LONG, LocaleResolver.getLocale() );
     } else {
       return null;
     }
@@ -284,22 +254,22 @@ public class LocaleHelper {
 
   public static DateFormat getFullDateFormat( final boolean date, final boolean time ) {
     if ( date && time ) {
-      return DateFormat.getDateTimeInstance( DateFormat.FULL, DateFormat.FULL, LocaleHelper.getLocale() );
+      return DateFormat.getDateTimeInstance( DateFormat.FULL, DateFormat.FULL, LocaleResolver.getLocale() );
     } else if ( date ) {
-      return DateFormat.getDateInstance( DateFormat.FULL, LocaleHelper.getLocale() );
+      return DateFormat.getDateInstance( DateFormat.FULL, LocaleResolver.getLocale() );
     } else if ( time ) {
-      return DateFormat.getTimeInstance( DateFormat.FULL, LocaleHelper.getLocale() );
+      return DateFormat.getTimeInstance( DateFormat.FULL, LocaleResolver.getLocale() );
     } else {
       return null;
     }
   }
 
   public static NumberFormat getNumberFormat() {
-    return NumberFormat.getNumberInstance( LocaleHelper.getLocale() );
+    return NumberFormat.getNumberInstance( LocaleResolver.getLocale() );
   }
 
   public static NumberFormat getCurrencyFormat() {
-    return NumberFormat.getCurrencyInstance( LocaleHelper.getLocale() );
+    return NumberFormat.getCurrencyInstance( LocaleResolver.getLocale() );
   }
 
   public static String getClosestLocale( String locale, String[] locales ) {
