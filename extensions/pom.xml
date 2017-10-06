@@ -2203,22 +2203,34 @@
 			<version>${org.apache.felix.http.version}</version>
 			<scope>compile</scope>
 		</dependency>
-        <dependency>
-          <groupId>org.apache.felix</groupId>
-          <artifactId>org.apache.felix.utils</artifactId>
-          <version>${org.apache.felix.utils.version}</version>
-          <scope>compile</scope>
-          <exclusions>
-              <exclusion>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.core</artifactId>
-              </exclusion>
-              <exclusion>
-                 <groupId>org.osgi</groupId>
-                 <artifactId>org.osgi.compendium</artifactId>
-              </exclusion>
-            </exclusions>
-        </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.utils</artifactId>
+      <version>${org.apache.felix.utils.version}</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.osgi</groupId>
+          <artifactId>org.osgi.core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.osgi</groupId>
+          <artifactId>org.osgi.compendium</artifactId>
+        </exclusion>
+        </exclusions>
+    </dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.compendium</artifactId>
+			<version>${org.osgi.compendium.version}</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>*</artifactId>
+					<groupId>*</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		<dependency>
 			<groupId>com.dumbster</groupId>
 			<artifactId>dumbster</artifactId>
